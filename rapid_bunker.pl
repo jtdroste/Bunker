@@ -128,7 +128,7 @@ sub scanner
 			}
 		}
 	}
-        &colored_say("bold green",   "\nYou may enter an additional command");
+    &prompt();
 }
 
 # Custom Firewall function. Configures IP tables to user specifications.
@@ -192,7 +192,7 @@ sub fw_custom
 	&iptables_udp(@udp_ports);
 	system("sudo iptables -A INPUT -j DROP");
 	system("sudo iptables --list");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+	&prompt();
 }
 
 #Sub function that takes an array of tcp port numbers and creates permissive firewall rules
@@ -247,7 +247,7 @@ sub connections
 	&colored_say("bold green",   "Listing all active or listening connections.");
 	system("netstat --inet -a");
 	&colored_say("bold green",   "Connections have completed being listed");
-	&colored_say("bold green",   "\nYou may enter an additional command.");
+	&prompt();
 }
 
 #Lists iptable rules
@@ -256,14 +256,14 @@ sub fw_rules
 	&colored_say("bold green",   "Listing all filewall rules.");
 	system("sudo iptables --list");
 	&colored_say("bold green",   "Firewall rules have been listed");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+	&prompt();
 }
 
 #Utilizes ps to list processes running on the machine.
 sub proc
 {
 	system("ps -face");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+	&prompt();
 }
 
 #Utilizes lsof to list open files on the machine
@@ -271,7 +271,7 @@ sub list_open
 {
 	&colored_say("bold green",   "This will list all the files currently open.");
 	system("lsof");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+	&prompt();
 }
 
 #Configures iptables to be restrictive
@@ -286,7 +286,7 @@ sub fw_bunker
 	&enable_ping(); 
 	system("sudo iptables -A INPUT -j DROP");
 	system("sudo iptables --list");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+	&prompt();
 }
 
 #Lists logged in users
@@ -294,7 +294,7 @@ sub users
 {
 	&colored_say("bold green", "Listing all logged in users.");
 	system("w");
-	&colored_say("bold green", "\nYou may enter an additional command");
+	&prompt();
 }
 
 #Lists recent user logins
@@ -302,7 +302,7 @@ sub last_login
 {
 	&colored_say("bold green",   "Listing last logins");
 	system("last");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+	&prompt();
 }
 
 #Lists programs currently opening network connections
@@ -310,7 +310,7 @@ sub snitch
 {
 	&colored_say("bold green",   "Listing all processes connecting to the network...");
 	system("lsof -i");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+	&prompt();
 }
 
 #Prints out list of valid commands that the user may type
@@ -377,7 +377,7 @@ sub killall
 	&colored_say("bold green",   "\nType process name to kill all instances of (example: firefox):");	
 	chomp(my $proc = <STDIN>);
 	system("sudo killall $proc");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+	&prompt();
 }
 
 #Allows a user to kill a process by PID 
@@ -388,7 +388,7 @@ sub killpid
 	&colored_say("bold green",   "\nType process ID (PID) to run 'kill' against (example: 1234):");	
 	chomp(my $pid = <STDIN>);
 	system("sudo kill $pid");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+	&prompt();
 }
 
 #Install security applications
@@ -469,7 +469,7 @@ sub all_users
 	&colored_say("bold green",   "\nListing all users on the machine:");	
 	#Command sourced from stackoverflow.com/q/12539272
 	system("grep -o '^[^:]*' /etc/passwd");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+    &prompt();
 }
 
 #Lists failed login attempts
@@ -477,7 +477,12 @@ sub failed
 {
 	&colored_say("bold green",   "\nListing all failed login attempts on the machine:");
 	system("sudo faillog --all");
-	&colored_say("bold green",   "\nYou may enter an additional command");
+	&prompt();
+}
+
+sub prompt
+{
+    &colored_say("bold green",   "\nRapid_Bunker - Enter Command: ");
 }
 
 #Main function body, loops until exit command is given. Takes user input and sends it to the function hash, as well as checks for errors.
@@ -485,12 +490,15 @@ sub main
 {
 	&colored_say("bold green",   "\nWelcome to Rapid Bunker!");
 	&colored_say("bold red", "\nRapid bunker comes with ABSOLUTELY NO WARRANTY, use at your own risk!");
-	&help();
+	
+    &help();
+    
+    &prompt();
 	
 	while("1" == "1")
 	{
 		chomp(my $input = <STDIN>);  
-		{no warnings 'uninitialized'; eval{ $functionmap{$input}(); } or do { &colored_say("red", "Invalid Input!\n"); }; }
+		{no warnings 'uninitialized'; eval{ $functionmap{$input}(); } or do { &colored_say("red", "Invalid Input!\n"); &prompt(); }; }
 	}
 }
 
