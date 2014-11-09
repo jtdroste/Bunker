@@ -42,10 +42,12 @@ def help():
 	print('files: Lists all files currently opened on the machine')
 	print('')
 
+
 def version():
 	print('Rapid_Bunker v0.1-BETA')
 	print('Author: James Droste <james@droste.im>')
 	print('Based on Rapid_Bunker by Brian Wilcox')
+
 
 def fw():
 	print('Listing firewall rules:\n')
@@ -53,6 +55,7 @@ def fw():
 	os.system('sudo iptables --list')
 	
 	print('-------')
+
 
 def fw_secure():
 	print('Implementing basic firewall rules:\n')
@@ -82,6 +85,7 @@ def fw_secure():
 	
 	print('Basic firewall rules has been added. Please allow specific ports through "fw_open"')
 
+
 def fw_open():
 	print('Opening a firewall port...')
 	t = raw_input('TCP or UDP Port? ')
@@ -94,6 +98,7 @@ def fw_open():
 	
 	print('Opened port '+port+'!')
 
+
 def fw_block():
 	print('Blocking an IP address...')
 	ip = raw_input('IP Address: ')
@@ -102,50 +107,72 @@ def fw_block():
 	
 	print('Blocked IP '+ip+'!')
 
+
 def ports():
 	print('Listing all active or listening connections:')
 	
 	os.system('netstat --inet -a')
+
 
 def snitch():
 	print('Showing what processes are connecting to the server:')
 	
 	os.system('lsof -i')
 
+
 def proc():
 	print('Listing all running processes')
 	
 	os.system('ps -face')
+
 
 def kill():
 	print('Killing a process. What is the process name or id?')
 	
 	killme = raw_input('Process Name/ID: ')
 	
+	if ( killme.isdigit() ):
+		os.system('sudo kill '+killme)
+	else:
+		os.system('sudo killall '+killme)
+	
 	print('TODO')
 
+
 def install():
-	print('TODO')
+	apt_test = os.system('which apt-get')
+	yum_test = os.system('which yum')
+	
+	if ( apt_test == 0 ) :
+		os.system('sudo apt-get install fail2ban chkrootkit logwatch nmap')
+	
+	if ( yum_test == 0 ) :
+		os.system('sudo yum install fail2ban chkrootkit logwatch nmap')
+
 
 def last():
 	print('Listing last logins')
 	
 	os.system('last')
 
+
 def users():
 	print('Listing all logged in users')
 	
 	os.system('who')
+
 
 def userlist():
 	print('Listing all users on this system')
 	
 	os.system('grep -o \'^[^:]*\' /etc/passwd')
 
+
 def files():
 	print('Listing all files currently open')
 	
 	os.system('lsof')
+
 
 # Function Map
 functions = {
