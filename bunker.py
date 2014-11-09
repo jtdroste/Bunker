@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import subprocess
 # ---------------------
 # Rapid_Bunker
 # 
@@ -40,6 +41,8 @@ def help():
 	print('users: Lists all currently logged in users')
 	print('userlist: Lists all users on the machine')
 	print('files: Lists all files currently opened on the machine')
+	print('cron: Edit the cron (scheduled tasks) for a user')
+	print('sshconfig: Edit the ssh configuration')
 	print('')
 
 
@@ -174,6 +177,18 @@ def files():
 	os.system('lsof')
 
 
+def cron():
+	print('Listing all scheduled tasks for a user')
+	
+	user = raw_input('Username: ')
+	
+	subprocess.call(['sudo', 'crontab', '-e', '-u', user])
+
+
+def sshconfig():
+	subprocess.call(['sudo', 'nano', '/etc/ssh/sshd_config'])
+
+
 # Function Map
 functions = {
   # General
@@ -200,6 +215,8 @@ functions = {
   'users': users,
   'userlist': userlist,
   'files': files,
+  'cron': cron,
+  'sshconfig': sshconfig,
   
   # More general...
   'quit': exit,
@@ -214,7 +231,7 @@ print('Rapid Bunker comes with ABSOLUTELY NO WARRANTY, use at your own risk!\n')
 help()
 
 while True:
-  cmd = raw_input('Rapid_Bunker > ')
+  cmd = raw_input('Rapid_Bunker> ')
   
   try:
     functions[cmd]()
