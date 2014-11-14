@@ -201,19 +201,19 @@ def fw_log():
 			if ( inchain == 2 ):
 				# Enable
 				os.system('sudo iptables -A bunker-log-in-chain -m state --state NEW -j LOG --log-prefix "New Connection: "')
-			else
+			else:
 				# Disable
 				os.system('sudo iptables -F bunker-log-in-chain')
 		elif ( command == 2 ):
 			if ( outchain == 2 ):
 				# Enable
 				os.system('sudo iptables -A bunker-log-out-chain -m state --state NEW -j LOG --log-prefix "New Outbound Connection: "')
-			else
+			else:
 				# Disable
 				os.system('sudo iptables -F bunker-log-out-chain')
 		elif ( command == 3 ):
 			return 0
-		else
+		else:
 			print('Unknonw action!')
 
 def ports():

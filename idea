@@ -1,0 +1,7 @@
+1) Rapid_Bunker monitor NEW connections
+2) Simple allow services
+	- http
+	- ssh
+	- dns
+	- mysql
+3) List all groups, and members
