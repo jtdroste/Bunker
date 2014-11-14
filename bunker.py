@@ -223,7 +223,7 @@ def fw_log():
 def fw_showlog():
 	print('Showing firewall log...')
 	
-	subprocess.call(['sudo', 'cat', '/var/log/kern.log', '|', 'grep', '"Connection"', '|', 'less', '-S'])
+	subprocess.call(['sudo', 'cat /var/log/kern.log | grep "Connection" | less -s'])
 
 
 def ports():
