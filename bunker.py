@@ -177,7 +177,7 @@ def fw_log():
 	proc1 = subprocess.Popen('sudo iptables -L bunker-log-in-chain | wc -l', stdout=subprocess.PIPE, shell=True)
 	(inchain, err1) = proc1.communicate()
 	
-	proc12= subprocess.Popen('sudo iptables -L bunker-log-out-chain | wc -l', stdout=subprocess.PIPE, shell=True)
+	proc2 = subprocess.Popen('sudo iptables -L bunker-log-out-chain | wc -l', stdout=subprocess.PIPE, shell=True)
 	(outchain, err1) = proc2.communicate()
 	
 	if ( inchain == 2 ):
