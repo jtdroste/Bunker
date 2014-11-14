@@ -1,77 +1,65 @@
-Rapid_Bunker
+Bunker
 ============
 
-A Perl utility that allows for the rapid deployment of iptables, and provides a common simple interface to security, system administration, and forensics related Linux utilities.
+A Python utility that allows for the rapid deployment of iptables, and provides a common simple interface to security, system administration, and forensics related Linux utilities.  Originally by [Bryan Wilcox](https://github.com/briwilcox), this script was converted to python, and additional utilities were added.
 
 # Commands / Usage
 
 General:
 
-	help : relists these commands
+	help: This command (lists all commands)
+	version: Prints out the system version, and author
+	exit: Exits the program
 
-	exit : terminates the program
+Firewall & Ports:
 
-Network Related:
+	fw: Lists all firewall rules
+	fw_secure: Implements *BASIC* firewall rules
+	fw_open: Opens a firewall port to connect to
+	fw_block: Blocks an IP
+	fw_log: Enable or Disable firewall logging
+	ports: Lists all open/listening connections
 
-	connections : lists open or listening connections
+Processes:
 
-	snitch : lists all processes connecting to the network
+	snitch: Shows what processes are connecting to a server
+	proc: Lists all processes by all users
+	kill: Kills a process by a name or PID
 
-	scan : user friendly interface to ipv4 port scanning (common or all ports, ability to spoof IP address easily) or drop into nmap for more control
+Hardening:
 
-	fw_rules : lists firewall rules
+	install: Installs common security applications (fail2ban, logwatch, nmap)
 
-	fw_bunker : implements restrictive firewall rules, closing all ports, and only allowing connections that the host initiates. User may allow or deny ICMP (ping).
-
-	fw_custom : allows the user to open specific ports and set firewall rules. User may allow or deny ICMP (ping).
-
-User Related:
-
-	last : list the logins to the machine
-
-	users : list currently logged in users
-
-	all_users : list all users on the machine
-
-	failed_logins : list all failed login attempts on the machine, and to which accounts
-
-	Process Related:
-
-	proc : list processes for all users
-
-	kill_proc : kills a proccess by name or by PID
-
-	list_open : (Warning large amounts of output) Lists all open files
-
-Misc:
-
-	install_sec : install common security applications (‘fail2ban’, ‘chkrootkit’, ‘logwatch’, ‘nmap’).
+Other:
+	last: Lists the last logins to the machine
+	users: Lists all currently logged in users
+	userlist: Lists all users on the machine
+	grouplist: Lists all groups that has users
+	files: Lists all files currently opened on the machine
+	cron: Edit the cron (scheduled tasks) for a user
+	sshconfig: Edit the ssh configuration
 
 # Why write this utility?
 
-My original goal was to provide an easy portable interface to IP tables. This expanded to building a common interface to different utilities / commands, useful for systems administration, security, or forensics. My goal is for someone new to Linux who may be unfamiliar with these commands or syntax to be able to quickly gain valuable information about the system they are on, and begin securing it. This tool is also great for saving time for more experienced Linux users, as it is unnecessary to look at man pages or search the web for a specific combination of command arguments.
-
-# Why Perl?
-
-Perl was chosen due to portability. Perl is installed by default on most popular Linux distributions, both desktop and server. Perl also allows me as a programmer to easily call system utilities, and integrates well with Linux. As an interpreted language Perl does not need to be compiled against different processor architectures, and does not need additional software installed assuming that like most Linux systems the one it is being executed on comes with Perl pre-installed. I also try to avoid the use of obscure perl modules that may not be installed by default.
+Originally I was told about this tool days before our network defense competition.  After seeing it's potential in getting students quickly acquainted with system security and hardening, I decided to fork it and include my own commands as well.  This also served as a tool for me to get acquainted with python programming, so please excuse the bad practices/code.
 
 # Installation
 
 Getting and executing the code should be as simple as:
 
-    wget https://raw.github.com/briwilcox/Rapid_Bunker/master/rapid_bunker.pl
+    wget https://raw.github.com/jtdroste/Bunker/master/bunker.py
 
-    chmod +x rapid_bunker
+    chmod +x bunker.py
 
-    ./rapid_bunker.pl
+    ./bunker.py
 
 
 # License
 
-Licensed under the BSD license included on the Rapid Bunker github repository.
+Licensed under the BSD license included on the Bunker github repository.
 
 # Misc
 
-To contact the author : http://brianmwilcox.com
+To contact the original author: http://brianmwilcox.com
 
-FAQ / Usage : http://brianmwilcox.com/rapid-bunker-faq/
+To contact the Bunker's current author: https://james.droste.im
