@@ -195,7 +195,7 @@ def fw_log():
 	print('')
 	
 	while True:
-		command = raw_input("Action: ")
+		command = int(raw_input("Action: "))
 		
 		if ( command == 1 ):
 			if ( inchain == 2 ):
