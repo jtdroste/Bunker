@@ -174,8 +174,11 @@ def fw_log():
 		print('System was not setup with Rapid_Bunker. Can not continue.')
 		return 0;
 	
-	inchain = os.system('sudo iptables -L bunker-log-in-chain | wc -l')
-	outchain = os.system('sudo iptables -L bunker-log-out-chain | wc -l')
+	proc1 = subprocess.Popen('sudo iptables -L bunker-log-in-chain | wc -l', stdout=subprocess.PIPE, shell=True)
+	(inchain, err1) = proc1.communicate()
+	
+	proc12= subprocess.Popen('sudo iptables -L bunker-log-out-chain | wc -l', stdout=subprocess.PIPE, shell=True)
+	(outchain, err1) = proc2.communicate()
 	
 	if ( inchain == 2 ):
 		print('Logging inbound connections: DISABLED')
