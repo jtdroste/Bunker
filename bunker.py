@@ -23,6 +23,7 @@ def help():
 	print('fw_secure: Implements *BASIC* firewall rules')
 	print('fw_open: Opens a firewall port to connect to')
 	print('fw_block: Blocks an IP')
+	print('fw_log: Enable or Disable firewall logging')
 	print('ports: Lists all open/listening connections')
 	print('')
 	
@@ -65,9 +66,28 @@ def fw_secure():
 	print('Implementing basic firewall rules:\n')
 	
 	os.system('sudo iptables -F')
+	
+	# Localhost traffic
 	os.system('sudo iptables -A INPUT -i lo -j ACCEPT')
 	os.system('sudo iptables -A OUTPUT -o lo -j ACCEPT')
+	
+	# Allow accepted and related traffic
 	os.system('sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT')
+	
+	# Add bunker logging chain
+	os.system('sudo iptables -N bunker-log-in-chain')
+	os.system('sudo iptables -A INPUT -j bunker-log-in-chain')
+	
+	os.system('sudo iptables -N bunker-log-out-chain')
+	os.system('sudo iptables -A INPUT -j bunker-log-out-chain')
+	
+	# Add bunker block chain
+	os.system('sudo iptables -N bunker-block-chain')
+	os.system('sudo iptables -A INPUT -j bunker-block-chain')
+	
+	# Add bunker input chain
+	os.system('sudo iptables -N bunker-input-chain')
+	os.system('sudo iptables -A INPUT -j bunker-input-chain')
 	
 	# Ping
 	print('Would you to enable this machine to respond to pings?')
@@ -80,10 +100,28 @@ def fw_secure():
 		
 		print('Please carefully type the IP address of the interface you would like to allow incoming and outgoing ping from.')
 		ip = raw_input('IP Address: ')
+		
+		# Ping in
 		os.system('sudo iptables -A INPUT -p icmp --icmp-type 8 -s 0/0 -d ' + ip + ' -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT')
+		os.system('sudo iptables -A INPUT -p icmp --icmp-type 0 -s 0/0 -d ' + ip + ' -m state --state ESTABLISHED,RELATED -j ACCEPT')
+		
+		# Ping out
 		os.system('sudo iptables -A OUTPUT -p icmp --icmp-type 0 -s ' + ip + ' -d 0/0 -m state --state ESTABLISHED,RELATED -j ACCEPT')
 		os.system('sudo iptables -A OUTPUT -p icmp --icmp-type 8 -s ' + ip + ' -d 0/0 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT')
-		os.system('sudo iptables -A INPUT -p icmp --icmp-type 0 -s 0/0 -d ' + ip + ' -m state --state ESTABLISHED,RELATED -j ACCEPT')
+	
+	# Log inbound
+	print('Would you like to log inbound connections?')
+	yn = raw_input('[Y/n]: ')
+	
+	if ( yn == 'Y' or yn == 'y' ):
+		os.system('sudo iptables -A bunker-log-in-chain -m state --state NEW -j LOG --log-prefix "New Connection: "')
+	
+	# Log outbound
+	print('Would you like to log outbound connections?')
+	yn = raw_input('[Y/n]: ')
+	
+	if ( yn == 'Y' or yn == 'y' ):
+		os.system('sudo iptables -A bunker-log-out-chain -m state --state NEW -j LOG --log-prefix "New Outbound Connection: "')
 	
 	os.system('sudo iptables -A INPUT -j DROP')
 	
@@ -93,12 +131,20 @@ def fw_secure():
 def fw_open():
 	print('Opening a firewall port...')
 	t = raw_input('TCP or UDP Port? ')
-	port = raw_inpit('Which Port? ')
+	port = raw_input('Which Port? ')
+	
+	if ( os.system('sudo iptables -S bunker-input-chain > /dev/null 2>&1') == 1 ):
+		os.system('sudo iptables -N bunker-input-chain')
+		print('')
+		print('**NOTE: I did not detect the following chain: bunker-block-chain')
+		print('**NOTE: You will have to add a jump to the chain "bunker-block-chain" in your INPUT firewall rules')
+		print('**NOTE: Or you can run the fw_secure command, and re-run this command :-)')
+		print('')
 	
 	if ( t == "UDP" or t == "udp" ):
-		os.system('sudo iptables -A INPUT -p udp --dport '+port+' -j ACCEPT')
+		os.system('sudo iptables -A bunker-input-chain -p udp --dport '+port+' -j ACCEPT')
 	else:
-		os.system('sudo iptables -A INPUT -p tcp --dport '+port+' -j ACCEPT')
+		os.system('sudo iptables -A bunker-input-chain -p tcp --dport '+port+' -j ACCEPT')
 	
 	print('Opened port '+port+'!')
 
@@ -107,10 +153,68 @@ def fw_block():
 	print('Blocking an IP address...')
 	ip = raw_input('IP Address: ')
 	
-	os.system('sudo iptables -A INPUT -s '+ip+' -j DROP')
+	if ( os.system('sudo iptables -S bunker-block-chain > /dev/null 2>&1') == 1 ):
+		os.system('sudo iptables -N bunker-block-chain')
+		print('')
+		print('**NOTE: I did not detect the following chain: bunker-block-chain')
+		print('**NOTE: You will have to add a jump to the chain "bunker-block-chain" in your INPUT firewall rules')
+		print('**NOTE: Or you can run the fw_secure command, and re-run this command :-)')
+		print('')
+	
+	os.system('sudo iptables -A bunker-block-chain -s '+ip+' -j DROP')
 	
 	print('Blocked IP '+ip+'!')
 
+
+def fw_log():
+	print('Firewall logging')
+	print('**NOTICE** This will only work if you setup your firewall using "fw_secure"!')
+	
+	if ( os.system('sudo iptables -S bunker-log-in-chain > /dev/null 2>&1') == 1 or os.system('sudo iptables -S bunker-log-out-chain > /dev/null 2>&1') == 1 ):
+		print('System was not setup with Rapid_Bunker. Can not continue.')
+		return 0;
+	
+	inchain = os.system('sudo iptables -L bunker-log-in-chain | wc -l')
+	outchain = os.system('sudo iptables -L bunker-log-out-chain | wc -l')
+	
+	if ( inchain == 2 ):
+		print('Logging inbound connections: DISABLED')
+	else:
+		print('Logging inbound connections: ENABLED')
+	
+	if ( outchain == 2 ):
+		print('Logging outbound connections: DISABLED')
+	else:
+		print('Logging outbound connections: ENABLED')
+	
+	print('')
+	print('What would you like to do?')
+	print('1: Toggle logging inbound connections')
+	print('2: Toggle logging outbound connections')
+	print('3: Exit this selection (but not the program!)')
+	print('')
+	
+	while True:
+		command = raw_input("Action: ")
+		
+		if ( command == 1 ):
+			if ( inchain == 2 ):
+				# Enable
+				os.system('sudo iptables -A bunker-log-in-chain -m state --state NEW -j LOG --log-prefix "New Connection: "')
+			else
+				# Disable
+				os.system('sudo iptables -F bunker-log-in-chain')
+		elif ( command == 2 ):
+			if ( outchain == 2 ):
+				# Enable
+				os.system('sudo iptables -A bunker-log-out-chain -m state --state NEW -j LOG --log-prefix "New Outbound Connection: "')
+			else
+				# Disable
+				os.system('sudo iptables -F bunker-log-out-chain')
+		elif ( command == 3 ):
+			return 0
+		else
+			print('Unknonw action!')
 
 def ports():
 	print('Listing all active or listening connections:')
@@ -207,6 +311,7 @@ functions = {
   'fw_secure': fw_secure,
   'fw_open': fw_open,
   'fw_block': fw_block,
+  'fw_log': fw_log,
   'ports': ports,
   
   # Processes
