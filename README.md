@@ -31,6 +31,7 @@ Hardening:
 	install: Installs common security applications (fail2ban, logwatch, nmap)
 
 Other:
+
 	last: Lists the last logins to the machine
 	users: Lists all currently logged in users
 	userlist: Lists all users on the machine
