@@ -220,11 +220,6 @@ def fw_log():
 		else:
 			print('Unknonw action!')
 
-def fw_showlog():
-	print('Showing firewall log...')
-	
-	subprocess.call(['cat /var/log/kern.log | grep "Connection" | less -s'])
-
 
 def ports():
 	print('Listing all active or listening connections:')
