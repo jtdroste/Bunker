@@ -24,6 +24,7 @@ def help():
 	print('fw_open: Opens a firewall port to connect to')
 	print('fw_block: Blocks an IP')
 	print('fw_log: Enable or Disable firewall logging')
+	print('fw_showlog: Shows the firewall log, assuming you enabled loging')
 	print('ports: Lists all open/listening connections')
 	print('')
 	
@@ -219,6 +220,12 @@ def fw_log():
 		else:
 			print('Unknonw action!')
 
+def fw_showlog():
+	print('Showing firewall log...')
+	
+	subprocess.call(['sudo', 'cat', '/var/log/kern.log', '|', 'grep', '"Connection"', '|', 'less', '-S'])
+
+
 def ports():
 	print('Listing all active or listening connections:')
 	
@@ -315,6 +322,7 @@ functions = {
   'fw_open': fw_open,
   'fw_block': fw_block,
   'fw_log': fw_log,
+  'fw_showlog': fw_showlog,
   'ports': ports,
   
   # Processes
