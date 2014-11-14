@@ -40,6 +40,7 @@ def help():
 	print('last: Lists the last logins to the machine')
 	print('users: Lists all currently logged in users')
 	print('userlist: Lists all users on the machine')
+	print('grouplist: Lists all groups that has users')
 	print('files: Lists all files currently opened on the machine')
 	print('cron: Edit the cron (scheduled tasks) for a user')
 	print('sshconfig: Edit the ssh configuration')
@@ -168,7 +169,13 @@ def users():
 def userlist():
 	print('Listing all users on this system')
 	
-	os.system('grep -o \'^[^:]*\' /etc/passwd')
+	os.system('awk -F\':\' \'{ print $1 }\' /etc/passwd')
+
+
+def grouplist():
+	print('Listing all groups with users assigned to it')
+	
+	os.system('getent group | awk -F\':\' \'{ if ( $4 != "" ) { print $1 ": " $4 } }\'')
 
 
 def files():
@@ -214,6 +221,7 @@ functions = {
   'last': last,
   'users': users,
   'userlist': userlist,
+  'grouplist': grouplist,
   'files': files,
   'cron': cron,
   'sshconfig': sshconfig,
