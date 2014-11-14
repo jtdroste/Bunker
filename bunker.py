@@ -3,14 +3,14 @@
 import os
 import subprocess
 # ---------------------
-# Rapid_Bunker
+# Bunker
 # 
 # By James Droste <james@droste.im>
 # Based on Rapid_Bunker by Brian Wilcox
 # ---------------------
 
 def help():
-	print('Rapid_Bunker Command List:')
+	print('Bunker Command List:')
 	print('')
 	
 	print('General Commands:')
@@ -49,7 +49,7 @@ def help():
 
 
 def version():
-	print('Rapid_Bunker v0.1-BETA')
+	print('Bunker v1.0-BETA')
 	print('Author: James Droste <james@droste.im>')
 	print('Based on Rapid_Bunker by Brian Wilcox')
 
@@ -342,13 +342,13 @@ functions = {
 }
 
 # Actually start the program loop
-print('Welcome to Rapid Bunker!')
-print('Rapid Bunker comes with ABSOLUTELY NO WARRANTY, use at your own risk!\n')
+print('Welcome to Bunker!')
+print('Bunker Bunker comes with ABSOLUTELY NO WARRANTY, use at your own risk!\n')
 
 help()
 
 while True:
-  cmd = raw_input('Rapid_Bunker> ')
+  cmd = raw_input('Bunker> ')
   
   try:
     functions[cmd]()
